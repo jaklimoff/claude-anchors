@@ -1,0 +1,12 @@
+{
+  "name": "anchors",
+  "owner": { "name": "Jack Klimov" },
+  "description": "Keeps the exact details a compaction summary drops: file paths, commits, PR and issue ids, error types, URLs, settings and IPs, pulled out with plain regexes and put back after the compaction.",
+  "plugins": [
+    {
+      "name": "anchors",
+      "source": "./",
+      "description": "Keeps the exact details a compaction summary drops: file paths, commits, PR and issue ids, error types, URLs, settings and IPs, pulled out with plain regexes and put back after the compaction. No model calls."
+    }
+  ]
+}

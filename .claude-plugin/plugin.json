@@ -1,0 +1,13 @@
+{
+  "name": "anchors",
+  "version": "0.1.0",
+  "description": "Keeps the exact details a compaction summary drops: before Claude Code compacts, it pulls file paths, commit SHAs, PR and issue ids, error types, URLs, key=value pairs and IPs out of the conversation with plain regexes, and puts back the ones the summary left out. No model calls.",
+  "author": {
+    "name": "Jack Klimov",
+    "url": "https://jack.direct"
+  },
+  "types": "./types/index.d.ts",
+  "license": "MIT",
+  "repository": "https://github.com/jaklimoff/claude-anchors",
+  "homepage": "https://github.com/jaklimoff/claude-anchors"
+}
