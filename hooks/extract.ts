@@ -19,15 +19,19 @@ const ISSUE_WORD_RE = /\b(?:PR|pull request|issue)\s+#?(\d{1,6})\b/gi
 const ERROR_RE = /\b[A-Z][A-Za-z0-9]*(?:Error|Exception)\b/g
 const ERRNO_RE =
   /\bE(?:NOENT|ACCES|PERM|EXIST|CONNREFUSED|CONNRESET|ADDRINUSE|TIMEDOUT|NOTDIR|ISDIR|PIPE|NOTFOUND|AGAIN|MFILE|NOSPC|NOTEMPTY)\b/g
-const ABS_PATH_RE = /(?:~|\.{1,2})?\/(?:[\w.@+-]+\/)*[\w.@+-]+/g
-const REL_PATH_RE = /\b[\w.@+-]+(?:\/[\w.@+-]+)+/g
+const ABS_PATH_RE = /(?<![\w$}\])])(?:~|\.{1,2})?\/(?:[\w.@+-]+\/)*[\w.@+-]+/g
+// Not after $: "$DIR/files.txt" is a shell variable, not the path "DIR/files.txt".
+const REL_PATH_RE = /(?<![$\w.@+-])[\w.@+-]+(?:\/[\w.@+-]+)+/g
 const FILE_RE =
   /\b[\w.-]+\.(?:ts|tsx|js|jsx|mjs|cjs|py|rs|go|rb|java|kt|swift|cpp|hpp|php|sh|zsh|sql|md|mdx|json|jsonc|yaml|yml|toml|ini|env|lock|css|scss|html|vue|svelte|proto|tf)\b/gi
 const KV_RE = /(?<![\w.$])(--)?([A-Za-z_][A-Za-z0-9_.-]{0,40})=("[^"\n]{1,80}"|'[^'\n]{1,80}'|[^\s,;'"`)\]}=>][^\s,;'"`)\]}]{0,79})/g
 // A setting, not code: ENV_STYLE, dotted.or-kebab keys, or a --flag=value.
 const ENV_KEY = /^[A-Z][A-Z0-9_]+$/
 const CONFIG_KEY = /^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)+$/
-const CODE_VALUE = /[({\[]|^\$|^(?:lambda|function|new|await)\b/
+const CODE_VALUE = /[({\[]|^[$<\\]|^(?:lambda|function|new|await)\b/
+// data-testid="x", stroke-width="1.5": an HTML or SVG attribute, not a setting.
+const HTML_ATTR = /^(?:data|aria)-|^(?:stroke|fill|font|text|view|xml|class|style|width|height)(?:-|$)/
+const JUNK_PATHS = new Set(['/dev/null', '/dev/stdout', '/dev/stderr'])
 
 // Values that look like credentials never go back into the context.
 const SECRET_KEY = /token|secret|passw|pwd|api[_-]?key|auth|cookie|credential|session|private/i
@@ -50,7 +54,7 @@ const MIME = /^(?:image|text|application|audio|video|font|multipart)\/[\w.+-]+$/
 
 function isPath(p: string): boolean {
   if (p.length < 3 || p.length > 200) return false
-  if (MIME.test(p)) return false
+  if (MIME.test(p) || JUNK_PATHS.has(p)) return false
   // "/tasks" is a slash command: a one-part absolute path needs an extension.
   if (/^\/[^/]+$/.test(p) && !/\.[A-Za-z]\w{0,7}$/.test(p)) return false
   // A relative path needs a file extension or three parts: not "and/or", "R2/3".
@@ -88,9 +92,11 @@ export function extract(text: string): { kind: Kind; value: string }[] {
     const key = m[2] ?? ''
     const value = m[3] ?? ''
     if (!flag && !ENV_KEY.test(key) && !CONFIG_KEY.test(key)) continue
-    if (CODE_VALUE.test(value)) continue
-    if (SECRET_KEY.test(key) || SECRET_VALUE.test(value)) continue
-    add('kv', `${flag}${key}=${value}`)
+    if (!flag && HTML_ATTR.test(key)) continue
+    const v = value.replace(/[.,:;]+$/, '')
+    if (!v || CODE_VALUE.test(v)) continue
+    if (SECRET_KEY.test(key) || SECRET_VALUE.test(v)) continue
+    add('kv', `${flag}${key}=${v}`)
   }
 
   const paths = new Set<string>()

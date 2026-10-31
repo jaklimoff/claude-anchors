@@ -2,7 +2,7 @@
 
 A Claude Code plugin that keeps the exact details a compaction summary drops.
 
-When Claude Code compacts a long conversation, a model writes a summary and the rest is gone. Summaries are good at the story and bad at strings: the file paths, commit hashes, error names and URLs you will need again. In my own sessions (101 compactions in October 2026, Claude Opus 5.5), the summary kept 34% of them. Error names and URLs: 13%. A third of what it dropped came up again later in the same session.
+When Claude Code compacts a long conversation, a model writes a summary and the rest is gone. Summaries are good at the story and bad at strings: the file paths, commit hashes, error names and URLs you will need again. In my own sessions (103 compactions in October 2026, Claude Opus 5.5), the summary kept 36% of them. Error names and URLs: 13%. A third of what it dropped came up again later in the same session.
 
 This plugin does the boring part with plain regexes. Right before a compaction it pulls those details out of the conversation. Right after, it checks which ones the summary still holds, word for word, and puts the rest back as a short block of context. No model call, nothing leaves your machine.
 
@@ -72,15 +72,15 @@ bun tools/score.ts
 It reads the transcripts in `~/.claude/projects` (or `$CLAUDE_CONFIG_DIR/projects`), finds every compaction, and scores the summary the same way. It only reads files. Mine, for October 2026:
 
 ```
-101 compactions in 49 sessions: 8015 details found, the summaries kept 2742 (34%).
-  path     42% kept  (1689/4007)
-  commit   47% kept  (605/1301)
-  issue    41% kept  (188/463)
-  error    13% kept  (40/298)
-  url      13% kept  (139/1109)
-  kv        6% kept  (44/730)
-  ip       35% kept  (37/107)
-Of the 5273 dropped, 1786 (34%) came up again later in the same session.
+103 compactions in 50 sessions: 7919 details found, the summaries kept 2843 (36%).
+  path     44% kept  (1789/4084)
+  commit   46% kept  (610/1317)
+  issue    40% kept  (188/468)
+  error    13% kept  (40/306)
+  url      13% kept  (143/1131)
+  kv        7% kept  (36/505)
+  ip       34% kept  (37/108)
+Of the 5076 dropped, 1656 (33%) came up again later in the same session.
 ```
 
 ## How it works

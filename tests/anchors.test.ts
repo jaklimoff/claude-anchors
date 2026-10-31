@@ -23,6 +23,8 @@ test('extract finds each kind and skips secrets, mime types and code', async () 
   expect(kinds('content-type image/png and/or R2/3')).toEqual([])
   expect(kinds('color #495057 and item #1, but PR #128')).toEqual(['issue:#128'])
   expect(kinds('raised ConnectionError then ENOENT')).toEqual(['error:ConnectionError', 'error:ENOENT'])
+  expect(kinds('data-testid="x" stroke-width="1.5" --pathspec-from-file=<that')).toEqual([])
+  expect(kinds('cat $S/files.txt > /dev/null, then --flag=value.')).toEqual(['kv:--flag=value'])
 })
 
 test('a summary that drops details gets them back in the next context', async ($, on) => {
