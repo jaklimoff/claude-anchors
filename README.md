@@ -2,6 +2,11 @@
 
 A Claude Code plugin that keeps the exact details a compaction summary drops.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jaklimoff/claude-anchors/media/tour-dark.gif">
+  <img alt="A short animation of a context window. Message blocks fill a tall column, and some carry exact details as colored chips: cache.ts, a1b2c3d, TypeError, PORT=8080 and pull/42. A compaction squeezes the blocks into one summary block. cache.ts and TypeError land in it; the other three drop out and fade to gray. An anchor drops in, ropes catch the three gray chips and pull them back into a put back block under the summary. Then the real numbers: in 103 compactions the summary kept 36% of the details, and a third of the rest came up again. It ends on the install line, /plugin install anchors@anchors." src="https://raw.githubusercontent.com/jaklimoff/claude-anchors/media/tour-light.gif">
+</picture>
+
 When Claude Code compacts a long conversation, a model writes a summary and the rest is gone. Summaries are good at the story and bad at strings: the file paths, commit hashes, error names and URLs you will need again. In my own sessions (103 compactions in October 2026, Claude Opus 5.5), the summary kept 36% of them. Error names and URLs: 13%. A third of what it dropped came up again later in the same session.
 
 This plugin does the boring part with plain regexes. Right before a compaction it pulls those details out of the conversation. Right after, it checks which ones the summary still holds, word for word, and puts the rest back as a short block of context. No model call, nothing leaves your machine.
@@ -95,6 +100,12 @@ Of the 5076 dropped, 1656 (33%) came up again later in the same session.
 - It keeps strings, not meaning. The summary still decides what the work was about.
 - A regex makes mistakes both ways: a 7-character hex word can pass as a commit, and a path written in an unusual way can be missed.
 - More details back means a slightly bigger context after each compaction: the block is capped at 6,000 characters.
+
+## Development
+
+```
+bun docs/render-tour.ts        # record the tour GIFs from docs/tour.html; they live on the media branch
+```
 
 ## License
 

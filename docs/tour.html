@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Source of the README tour GIFs. Open it to play and scrub; record with bun docs/render-tour.ts. The GIFs live on the media branch. -->
+<title>Anchors Tour</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+  /* Layout: the tour card at GitHub README width, a transport bar under it. The card has its own fixed palette (light or dark). */
+  :root {
+    --bg: #f3f4f7; --surface: #ffffff; --ink: #15171c; --muted: #5d6271; --line: #dfe2ea;
+    --accent: #4f5bd5; --accent-ink: #ffffff;
+    --ui: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #0f1013; --surface: #18191e; --ink: #eef0f4; --muted: #9a9fac; --line: #2a2c35; --accent: #8b8fff; --accent-ink: #0f1013; color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --bg: #0f1013; --surface: #18191e; --ink: #eef0f4; --muted: #9a9fac; --line: #2a2c35; --accent: #8b8fff; --accent-ink: #0f1013; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--ui); }
+  .page { max-width: 878px; margin: 0 auto; padding-block: 36px 64px; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
+  @media (max-width: 500px) { .page { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); } }
+  h1 { font-size: 26px; font-weight: 600; margin: 0; letter-spacing: -.01em; }
+  .lede { color: var(--muted); margin: 6px 0 20px; max-width: 64ch; }
+
+  .wrap { position: relative; width: 100%; max-width: 100%; aspect-ratio: 1200 / 750; }
+  .stage { position: absolute; top: 0; left: 0; width: 1200px; height: 750px; transform-origin: 0 0; transform: scale(var(--k, .69)); }
+
+  .controls { display: grid; grid-template-columns: auto 1fr auto; gap: 12px 14px; align-items: center; margin-top: 16px; }
+  .btn { font: 500 13px var(--ui); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 7px; padding: 6px 12px; cursor: pointer; }
+  .btn:focus-visible, .chips button:focus-visible, input[type=range]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #play { min-width: 76px; }
+  .time { font: 500 13px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+  input[type=range] { width: 100%; accent-color: var(--accent); min-width: 0; }
+  .chips { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; justify-content: space-between; }
+  .chips .scenes { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chips button { font: 500 13px var(--ui); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 7px; padding: 5px 10px; cursor: pointer; }
+  .chips button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .seg { display: flex; gap: 4px; }
+  .notes { margin-top: 28px; border-top: 1px solid var(--line); padding-top: 14px; color: var(--muted); font-size: 14px; max-width: 70ch; }
+  .notes p { margin: 0 0 6px; }
+
+  /* ---------- the card ---------- */
+  .card {
+    --c-bg: #f7f7f5; --c-ink: #111214; --c-muted: #5c6068; --c-faint: #e4e4e0; --c-accent: #4f5bd5; --c-dot: #dcdcd8;
+    --col-bg: #ffffff; --col-line: #e0e0dc; --blk-u: #e9ebfb; --blk-u-line: #cfd3f5; --blk-a: #f1f1ee; --blk-a-line: #e4e4e0;
+    --bar-u: #c7ccf2; --bar-a: #dcdcd7; --warm: #d08a1e; --ok: #1f9d5c; --lost: #9a9ca2;
+    --k-path: #4f5bd5; --k-commit: #b7791f; --k-error: #cf4f5b; --k-kv: #1d958c; --k-url: #2b7bd3;
+    --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+    position: absolute; inset: 0; border-radius: 22px; border: 1px solid var(--c-faint); background: var(--c-bg); color: var(--c-ink);
+    font-family: -apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif; overflow: hidden;
+  }
+  .card[data-card="dark"] {
+    --c-bg: #131316; --c-ink: #f2f2f3; --c-muted: #9a9da5; --c-faint: #222226; --c-accent: #8b8fff; --c-dot: #2c2c33;
+    --col-bg: #0c0c0f; --col-line: #29292f; --blk-u: #1d1e33; --blk-u-line: #2d2f52; --blk-a: #1a1a1f; --blk-a-line: #26262c;
+    --bar-u: #3a3d6b; --bar-a: #2e2e35; --warm: #e8a33c; --ok: #5fd38f; --lost: #73767f;
+    --k-path: #8b8fff; --k-commit: #e2b453; --k-error: #ff8a8f; --k-kv: #5ccbc2; --k-url: #6fb6ff;
+  }
+  .abs { position: absolute; left: 0; top: 0; will-change: transform, opacity; }
+  .dots { position: absolute; left: 64px; top: 60px; display: flex; gap: 7px; }
+  .dots i { position: relative; width: 9px; height: 9px; border-radius: 5px; background: var(--c-dot); display: block; overflow: hidden; }
+  .dots i.done { background: var(--c-accent); opacity: .55; }
+  .dots i.on { width: 34px; }
+  .dots i b { position: absolute; inset: 0 auto 0 0; background: var(--c-accent); }
+
+  .cap { position: absolute; left: 64px; top: 0; width: 470px; }
+  .cap .t { font-size: 46px; font-weight: 700; letter-spacing: -.018em; line-height: 1.1; }
+  .cap .s { font-size: 21px; color: var(--c-muted); margin-top: 16px; }
+
+  .label { font-size: 13px; letter-spacing: .09em; text-transform: uppercase; color: var(--c-muted); }
+  .col { border-radius: 16px; background: var(--col-bg); border: 1.5px solid var(--col-line); overflow: hidden; }
+  .meter { width: 8px; border-radius: 4px; background: var(--c-dot); overflow: hidden; }
+  .meter b { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 4px; }
+  .blk { position: absolute; border-radius: 10px; border: 1.5px solid var(--blk-a-line); background: var(--blk-a); }
+  .blk.u { border-color: var(--blk-u-line); background: var(--blk-u); }
+  .blk i { position: absolute; height: 10px; border-radius: 5px; background: var(--bar-a); }
+  .blk.u i { background: var(--bar-u); }
+  .box { position: absolute; border-radius: 10px; transform-origin: 50% 0; }
+  .box .lb { position: absolute; left: 14px; top: 9px; font-size: 12px; letter-spacing: .09em; text-transform: uppercase; font-weight: 600; }
+  .box i { position: absolute; height: 10px; border-radius: 5px; }
+  .sum { border: 1.5px solid var(--blk-a-line); background: var(--blk-a); }
+  .sum .lb { color: var(--c-muted); }
+  .sum i { background: var(--bar-a); }
+  .pb { border: 1.5px solid var(--c-accent); background: color-mix(in srgb, var(--c-accent) 9%, var(--col-bg)); }
+  .pb .lb { color: var(--c-accent); }
+
+  .chip { height: 30px; line-height: 26px; padding: 1px 10px 0; border-radius: 15px; white-space: nowrap; font: 600 15.5px var(--mono);
+    color: var(--c); border: 1.5px solid var(--c); background: color-mix(in srgb, var(--c) 15%, var(--col-bg)); }
+  .anchor { width: 58px; height: 58px; color: var(--c-accent); transform-origin: 50% 12%; }
+  svg.ropes { position: absolute; left: 0; top: 0; width: 1200px; height: 750px; overflow: visible; }
+  svg.ropes line { stroke: var(--c-accent); stroke-width: 2; stroke-linecap: round; }
+
+  .stat { position: absolute; left: 0; right: 0; top: 0; text-align: center; }
+  .stat .a { font-size: 30px; color: var(--c-muted); }
+  .stat .big { font-size: 150px; font-weight: 750; letter-spacing: -.03em; line-height: 1; margin-top: 18px; font-variant-numeric: tabular-nums; }
+  .stat .big small { font-size: 44px; font-weight: 600; letter-spacing: -.01em; color: var(--c-muted); margin-left: 14px; }
+  .track { position: absolute; height: 28px; border-radius: 14px; background: var(--c-dot); overflow: hidden; }
+  .track b { position: absolute; top: 0; bottom: 0; }
+  .stat .bl { font-size: 30px; font-weight: 600; }
+
+  .end { position: absolute; left: 0; right: 0; top: 0; display: flex; flex-direction: column; align-items: center; }
+  .end .wm { display: flex; align-items: center; gap: 22px; font-size: 92px; font-weight: 750; letter-spacing: -.03em; }
+  .end .wm svg { width: 88px; height: 88px; color: var(--c-accent); }
+  .end .ins { margin-top: 40px; font: 500 26px var(--mono); padding: 14px 26px; border-radius: 14px; border: 1.5px solid var(--c-faint); background: color-mix(in srgb, var(--c-ink) 5%, var(--c-bg)); }
+</style>
+
+<div class="page">
+  <h1>Anchors Tour</h1>
+  <p class="lede">The context window fills with messages and exact details, a compaction squeezes it into a summary that drops some details, and anchors puts them back. Five scenes, about 20 seconds, drawn at the width GitHub shows a README GIF.</p>
+
+  <div class="wrap" id="wrap"><div class="stage" id="stage"></div></div>
+
+  <div class="controls">
+    <button class="btn" id="play" type="button">Pause</button>
+    <input type="range" id="scrub" min="0" max="100" step="0.01" value="0" aria-label="Position in the tour">
+    <span class="time" id="time">0.0 s</span>
+    <div class="chips">
+      <div class="scenes" id="scenes" role="group" aria-label="Scenes"></div>
+      <div class="seg" role="group" aria-label="Card colors"><button type="button" data-card="light">Light card</button><button type="button" data-card="dark">Dark card</button></div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <p>The final GIF is recorded from this page frame by frame, in both card colors, so the README can show the dark one to dark-mode readers.</p>
+    <p>Which details the summary keeps here (cache.ts and TypeError) is an example. The numbers in scene 4 are the ones in the README.</p>
+  </div>
+</div>
+
+<script>
+(() => {
+  // Recording reads its settings from the hash, comma-separated: #capture,t=6.0,card=dark
+  const params = new URLSearchParams(location.hash.startsWith('#capture') ? location.hash.slice(1).replace(/,/g, '&') : '');
+  const CAPTURE = params.has('capture');
+
+  const clamp = x => Math.max(0, Math.min(1, x));
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const eo = x => 1 - Math.pow(1 - clamp(x), 3);
+  const ei = x => Math.pow(clamp(x), 2);
+  const eio = x => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+  const back = (x, s = 1.70158) => { x = clamp(x); const c = s + 1; return 1 + c * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2); };
+  const ph = (lt, t0, d) => clamp((lt - t0) / d);
+  const f3 = x => x.toFixed(3);
+  const px = x => x.toFixed(1);
+
+  // ---------- geometry (card pixels) ----------
+  const COL = { x: 600, y: 78, w: 364, h: 602 }, PAD = 14, GAP = 10;
+  const INNER = COL.h - 2 * PAD;
+  // The session: user blocks are narrow and on the right, assistant blocks full width. Five carry a detail.
+  const BLOCKS = [
+    { u: 1, h: 54, chip: 'commit' }, { u: 0, h: 76, chip: 'error' }, { u: 1, h: 54 }, { u: 0, h: 66, chip: 'path' },
+    { u: 1, h: 54, chip: 'kv' }, { u: 0, h: 76, chip: 'url' }, { u: 1, h: 54 }, { u: 0, h: 66 },
+  ];
+  let yy = PAD;
+  for (const b of BLOCKS) {
+    b.w = b.u ? 244 : COL.w - 2 * PAD; b.x = b.u ? COL.w - PAD - b.w : PAD; b.y = yy; yy += b.h + GAP;
+  }
+  const SUM = { x: PAD, y: PAD, w: COL.w - 2 * PAD, h: 84 };
+  const PB = { x: PAD, y: SUM.y + SUM.h + GAP, w: COL.w - 2 * PAD, h: 80 };
+  // The details: the summary keeps two; three are dropped and come back in the order render() lists them.
+  const CHIPS = [
+    { k: 'path', t: 'cache.ts', keep: true },
+    { k: 'commit', t: 'a1b2c3d', rest: { x: 985, y: 556, r: -8 } },
+    { k: 'error', t: 'TypeError', keep: true },
+    { k: 'url', t: 'pull/42', rest: { x: 1012, y: 604, r: 6 } },
+    { k: 'kv', t: 'PORT=8080', rest: { x: 978, y: 652, r: -4 } },
+  ];
+  const ANCHOR = { x: COL.x + COL.w + 16, y: COL.y + PB.y + PB.h / 2 - 29 };
+  const RING = { x: ANCHOR.x + 29, y: ANCHOR.y + 8 };
+
+  const ANCHOR_SVG = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="32" cy="10" r="6"/><path d="M32 16v42"/><path d="M20 26h24"/><path d="M9 40c2 11 11 18 23 18s21-7 23-18"/><path d="M5 45l4-6 6 4"/><path d="M59 45l-4-6-6 4"/></svg>`;
+
+  const SCENES = [
+    { tab: 'Fill', cap: 'Your session fills the context', dur: 4.7 },
+    { tab: 'Compact', cap: 'Compaction keeps the story, loses the details', dur: 4.2 },
+    { tab: 'anchors', cap: 'anchors puts them back', sub: 'Plain regex, no model call.', dur: 4.5 },
+    { tab: 'Why', dur: 4.3 },
+    { tab: 'Install', dur: 2.9 },
+  ];
+  const STARTS = []; let TOTAL = 0;
+  for (const s of SCENES) { STARTS.push(TOTAL); TOTAL += s.dur; }
+
+  // ---------- DOM, built once: the same chip elements move through every scene ----------
+  const stage = document.getElementById('stage');
+  const bars = b => {
+    const out = [];
+    const l1 = b.chip ? 0 : 14; // with a chip, the first bar starts after it (set in measure)
+    out.push(`<i data-l1="${b.chip ? 1 : 0}" style="left:${l1}px;top:${b.h > 60 ? 18 : 21}px"></i>`);
+    if (b.h > 60) out.push(`<i style="left:14px;top:${b.h - 24}px;width:${Math.round((b.w - 28) * (b.u ? .7 : .62))}px"></i>`);
+    return out.join('');
+  };
+  stage.innerHTML = `<div class="card${CAPTURE ? ' capture' : ''}" id="card">
+    <div class="dots" id="dots"></div>
+    <div class="cap abs" id="cap"><div class="t"></div><div class="s"></div></div>
+    <div id="world" class="abs" style="width:1200px;height:750px">
+      <div class="label abs" style="transform:translate(${COL.x}px,${COL.y - 30}px)">context window</div>
+      <div class="meter abs" id="meter" style="height:${COL.h}px;transform:translate(${COL.x - 24}px,${COL.y}px)"><b id="mfill"></b></div>
+      <div class="col abs" style="width:${COL.w}px;height:${COL.h}px;transform:translate(${COL.x}px,${COL.y}px)" id="col">
+        ${BLOCKS.map((b, i) => `<div class="blk${b.u ? ' u' : ''}" id="b${i}" style="width:${b.w}px;height:${b.h}px">${bars(b)}</div>`).join('')}
+        <div class="box sum" id="sum" style="left:${SUM.x}px;top:${SUM.y}px;width:${SUM.w}px;height:${SUM.h}px"><span class="lb">summary</span><i style="left:110px;top:12px;width:170px"></i></div>
+        <div class="box pb" id="pb" style="left:${PB.x}px;top:${PB.y}px;width:${PB.w}px;height:${PB.h}px"><span class="lb">put back</span></div>
+      </div>
+      <svg class="ropes" id="ropes">${CHIPS.map((_, i) => `<line id="r${i}"/>`).join('')}</svg>
+      <div class="anchor abs" id="anchor">${ANCHOR_SVG}</div>
+      ${CHIPS.map((c, i) => `<div class="chip abs" id="c${i}">${c.t}</div>`).join('')}
+    </div>
+    <div class="stat" id="stat">
+      <div class="a" style="margin-top:150px">In 103 real compactions, the summary kept</div>
+      <div class="big"><span id="num">100%</span><small>of the details</small></div>
+      <div class="track" id="track" style="left:220px;width:760px;top:440px"><b id="tk" style="left:0"></b><b id="tr"></b></div>
+      <div class="bl" id="bl" style="margin-top:132px">A third of the rest came up again.</div>
+    </div>
+    <div class="end" id="end"><div class="wm" style="margin-top:228px">${ANCHOR_SVG}<span>anchors</span></div><div class="ins">/plugin install anchors@anchors</div></div>
+  </div>`;
+  const $ = id => document.getElementById(id);
+  const card = $('card'), dots = $('dots'), cap = $('cap'), world = $('world');
+  const capT = cap.querySelector('.t'), capS = cap.querySelector('.s');
+  const blk = BLOCKS.map((_, i) => $(`b${i}`)), chipEl = CHIPS.map((_, i) => $(`c${i}`)), rope = CHIPS.map((_, i) => $(`r${i}`));
+
+  // Chip widths depend on the font: measured once it is in, then every position below follows.
+  let G = null;
+  const measure = () => {
+    const w = chipEl.map(e => e.offsetWidth);
+    const start = {}, slot = {};
+    CHIPS.forEach((c, i) => {
+      const bi = BLOCKS.findIndex(b => b.chip === c.k), b = BLOCKS[bi];
+      start[i] = { x: COL.x + b.x + 13, y: COL.y + b.y + (b.h > 60 ? 8 : 12), bi };
+      const l1 = blk[bi].querySelector('i[data-l1="1"]');
+      if (l1) { l1.style.left = `${13 + w[i] + 12}px`; l1.style.width = `${Math.max(30, b.w - 13 - w[i] - 12 - 16)}px`; }
+    });
+    blk.forEach((e, bi) => { const l1 = e.querySelector('i[data-l1="0"]'); if (l1) l1.style.width = `${BLOCKS[bi].w - 28 - 30}px`; });
+    let kx = COL.x + SUM.x + 14, px2 = COL.x + PB.x + 14;
+    CHIPS.forEach((c, i) => {
+      if (c.keep) { slot[i] = { x: kx, y: COL.y + SUM.y + 42 }; kx += w[i] + 9; }
+      else { slot[i] = { x: px2, y: COL.y + PB.y + 38 }; px2 += w[i] + 9; }
+    });
+    G = { w, start, slot };
+  };
+
+  const setChip = (i, x, y, { r = 0, s = 1, o = 1, col } = {}) => {
+    const e = chipEl[i];
+    e.style.transform = `translate(${px(x)}px,${px(y)}px) rotate(${r.toFixed(2)}deg) scale(${f3(s)})`;
+    e.style.opacity = f3(o);
+    e.style.setProperty('--c', col);
+  };
+  const kc = c => `var(--k-${c.k})`;
+  const toward = (a, b, p) => `color-mix(in srgb, ${b} ${f3(clamp(p) * 100)}%, ${a})`;
+
+  // The world (column, chips, anchor) at a time in scenes 1 to 3. Scene 4 and 5 show it faded out.
+  const drawWorld = (si, lt) => {
+    let fill = 0, warm = 0;
+    // Blocks
+    BLOCKS.forEach((b, i) => {
+      const e = blk[i];
+      let x = b.x, y = b.y, w = b.w, h = b.h, o = 1;
+      if (si === 0) {
+        const p = ph(lt, .35 + i * .27, .5);
+        y = b.y - (1 - back(p, 1.3)) * 48; o = clamp(p / .35);
+        fill += (b.h + GAP) * eo(p);
+      } else {
+        const s = si === 1 ? eio(ph(lt, .35, .85)) : 1;
+        x = lerp(b.x, SUM.x, s); y = lerp(b.y, SUM.y, s); w = lerp(b.w, SUM.w, s); h = lerp(b.h, SUM.h, s);
+        o = 1 - clamp((s - .45) / .5);
+      }
+      e.style.transform = `translate(${px(x)}px,${px(y)}px)`;
+      e.style.width = `${px(w)}px`; e.style.height = `${px(h)}px`; e.style.opacity = f3(o);
+    });
+    // Summary and put-back boxes
+    const sumA = si === 0 ? 0 : si === 1 ? ph(lt, .85, .55) : 1;
+    $('sum').style.opacity = f3(clamp(sumA * 2.2));
+    $('sum').style.transform = `scaleY(${f3(lerp(.5, 1, back(sumA, 2.4)))})`;
+    const pbA = si < 2 ? 0 : ph(lt, 1.05, .45);
+    $('pb').style.opacity = f3(clamp(pbA * 2));
+    $('pb').style.transform = `scaleY(${f3(lerp(.55, 1, back(pbA, 2)))})`;
+    // Meter
+    if (si === 0) { warm = clamp((fill / INNER - .7) / .25); fill /= INNER; }
+    else {
+      const full = BLOCKS.reduce((a, b) => a + b.h + GAP, 0) / INNER, s = si === 1 ? eio(ph(lt, .35, .85)) : 1;
+      fill = lerp(full, (SUM.h + GAP) / INNER, s) + (si === 2 ? (PB.h + GAP) / INNER * eo(pbA) : 0);
+      warm = si === 1 ? 1 - s : 0;
+    }
+    const mf = $('mfill');
+    mf.style.height = `${f3(Math.min(1, fill) * 100)}%`;
+    mf.style.background = toward('var(--c-accent)', 'var(--warm)', warm);
+    // The column glows warm while it is full, before the squeeze.
+    const glow = si === 1 ? Math.sin(Math.PI * ph(lt, 0, .9)) : si === 0 ? warm * .35 : 0;
+    $('col').style.borderColor = toward('var(--col-line)', 'var(--warm)', glow);
+
+    // Anchor
+    const an = $('anchor');
+    if (si < 2) an.style.opacity = '0';
+    else {
+      const d = ph(lt, .25, .7);
+      const swing = 12 * Math.sin((lt - .25) * 8) * (1 - ph(lt, .6, 1.4)) * (lt > .25 ? 1 : 0);
+      an.style.opacity = f3(clamp(d * 4));
+      an.style.transform = `translate(${ANCHOR.x}px,${px(lerp(-80, ANCHOR.y, back(d, 1.5)))}px) rotate(${swing.toFixed(2)}deg)`;
+    }
+
+    // Chips
+    CHIPS.forEach((c, i) => {
+      const st = G.start[i], sl = G.slot[i], b = BLOCKS[st.bi];
+      const line = rope[i];
+      line.style.opacity = '0';
+      if (si === 0) {
+        const p = ph(lt, .35 + st.bi * .27, .5);
+        const pop = 1 + .14 * Math.sin(Math.PI * ph(p, .35, .5));
+        setChip(i, st.x, st.y - (1 - back(p, 1.3)) * 48, { o: clamp(p / .35), s: pop, col: kc(c) });
+        return;
+      }
+      if (c.keep) {
+        const k = si === 1 ? eio(ph(lt, .45, .95)) : 1;
+        const g = si === 1 ? ph(lt, 1.2, .45) : 1;
+        setChip(i, lerp(st.x, sl.x, k), lerp(st.y, sl.y, k), { col: toward(kc(c), 'var(--ok)', g) });
+        return;
+      }
+      const rs = c.rest, exitX = COL.x + COL.w + 26 + (i % 2) * 18;
+      if (si === 1) {
+        const d = eo(ph(lt, .5, .6)), f = ph(lt, 1.05, .95), g = ph(lt, 1.0, 1.1);
+        const x = f > 0 ? lerp(exitX, rs.x, eo(f)) : lerp(st.x, exitX, d);
+        const y = f > 0 ? lerp(st.y, rs.y, ei(f)) + Math.sin(Math.PI * clamp(f * 1.6 - .6)) * -6 * (f > .375 ? 1 : 0) : st.y - 16 * Math.sin(Math.PI * d);
+        setChip(i, x, y, { r: rs.r * eo(f), o: 1 - .3 * g, col: toward(kc(c), 'var(--lost)', g) });
+        return;
+      }
+      // si === 2: a rope from the anchor catches each chip, then it is pulled in under the summary.
+      const j = ['commit', 'url', 'kv'].indexOf(c.k);
+      const rp = eo(ph(lt, .95 + j * .07, .4));
+      const p = ph(lt, 1.45 + j * .12, .75), pe = back(p, 1.5), pc = eo(p);
+      const x = lerp(rs.x, sl.x, pe), y = lerp(rs.y, sl.y, pe);
+      const pop = 1 + .12 * Math.sin(Math.PI * ph(p, .55, .45));
+      setChip(i, x, y, { r: rs.r * (1 - pc), s: pop, o: .7 + .3 * pc, col: toward('var(--lost)', kc(c), pc) });
+      if (rp > 0) {
+        const cx = x + G.w[i] / 2, cy = y + 15;
+        line.setAttribute('x1', RING.x); line.setAttribute('y1', RING.y);
+        line.setAttribute('x2', px(lerp(RING.x, cx, rp))); line.setAttribute('y2', px(lerp(RING.y, cy, rp)));
+        line.style.opacity = f3(.85 * (1 - ph(p, .5, .4)));
+      }
+    });
+  };
+
+  const renderAt = T => {
+    T = ((T % TOTAL) + TOTAL) % TOTAL;
+    let idx = 0;
+    while (idx < SCENES.length - 1 && T >= STARTS[idx + 1]) idx++;
+    const sc = SCENES[idx], lt = T - STARTS[idx];
+    dots.innerHTML = SCENES.map((_, j) => j === idx
+      ? `<i class="on"><b style="width:${f3(clamp(lt / sc.dur) * 100)}%"></b></i>`
+      : `<i class="${j < idx ? 'done' : ''}"></i>`).join('');
+    const outP = eio(ph(lt, sc.dur - .45, .45));
+
+    // Caption: one per scene, top left, rises in and fades out at the end of its scene.
+    if (sc.cap) {
+      capT.textContent = sc.cap; capS.textContent = sc.sub || '';
+      const a = eo(ph(lt, .15, .5)), b = eo(ph(lt, .9, .5));
+      cap.style.opacity = f3(a * (1 - outP));
+      cap.style.transform = `translate(64px,${px(118 + (1 - a) * 14)}px)`;
+      capS.style.opacity = f3(b);
+      cap.style.left = '0';
+    } else cap.style.opacity = '0';
+
+    // The column and its chips: in at the start of the loop, out at the start of scene 4.
+    if (idx <= 2) {
+      drawWorld(idx, lt);
+      world.style.opacity = f3(idx === 0 ? eo(ph(lt, 0, .3)) : 1);
+      world.style.transform = 'none';
+    } else if (idx === 3) {
+      drawWorld(2, 10);
+      const o = eio(ph(lt, 0, .45));
+      world.style.opacity = f3(1 - o);
+      world.style.transform = `translateY(${px(-o * 14)}px)`;
+    } else world.style.opacity = '0';
+
+    // Scene 4: the real numbers from the README.
+    const stat = $('stat');
+    if (idx === 3) {
+      const a = eo(ph(lt, .35, .5)), k = eio(ph(lt, .8, 1.0)), m = eo(ph(lt, 1.8, .5));
+      stat.style.opacity = f3(a * (1 - outP));
+      stat.style.transform = `translateY(${px((1 - a) * 12)}px)`;
+      $('num').textContent = `${Math.round(lerp(100, 36, k))}%`;
+      const tk = $('tk'), tr = $('tr');
+      tk.style.width = `${f3(lerp(100, 36, k))}%`;
+      tk.style.background = toward('var(--c-accent)', 'var(--ok)', k);
+      // Of the 64% dropped, a third came up again later.
+      tr.style.left = '36%'; tr.style.width = `${f3(64 / 3 * m)}%`; tr.style.background = 'var(--warm)';
+      tr.style.opacity = f3(m);
+      $('bl').style.opacity = f3(m);
+      $('bl').style.color = 'var(--c-ink)';
+    } else stat.style.opacity = '0';
+
+    // Scene 5: the end card.
+    const end = $('end');
+    if (idx === 4) {
+      const a = eo(ph(lt, .1, .5));
+      end.style.opacity = f3(a * (1 - outP));
+      end.style.transform = `translateY(${px((1 - a) * 14)}px) scale(${f3(.97 + .03 * a)})`;
+    } else end.style.opacity = '0';
+    return idx;
+  };
+  window.TOUR = { total: TOTAL, starts: STARTS };
+  window.setCard = c => { card.dataset.card = c; };
+
+  if (CAPTURE) {
+    document.querySelector('.page').replaceWith(stage);
+    // The page color around the card's round corners: GitHub's, light or dark, passed as bg=ffffff.
+    const bg = /^[0-9a-f]{6}$/i.test(params.get('bg') || '') ? `#${params.get('bg')}` : '#ffffff';
+    document.documentElement.style.background = bg;
+    document.body.style.cssText = `margin:0;background:${bg}`;
+    stage.style.transform = 'none';
+    window.setCard(params.get('card') || 'light');
+    // Chip widths, and so every position, depend on the font: measure once it is in.
+    document.fonts.ready.then(() => {
+      measure();
+      window.renderAt = renderAt;
+      renderAt(+params.get('t') || 0);
+      document.body.dataset.ready = '1';
+    });
+    return;
+  }
+
+  // ---------- preview controls ----------
+  measure();
+  window.renderAt = renderAt;
+  document.fonts.ready.then(measure);
+  const wrap = document.getElementById('wrap');
+  const fit = () => stage.style.setProperty('--k', wrap.clientWidth / 1200);
+  new ResizeObserver(fit).observe(wrap); fit();
+
+  const scrub = document.getElementById('scrub'), time = document.getElementById('time'), playBtn = document.getElementById('play');
+  const scenesEl = document.getElementById('scenes');
+  scrub.max = TOTAL.toFixed(2);
+  SCENES.forEach((s, j) => scenesEl.insertAdjacentHTML('beforeend', `<button type="button" data-j="${j}">${j + 1} · ${s.tab}</button>`));
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let t = reduce ? STARTS[2] + 3.5 : 0, playing = !reduce, last = performance.now(), shownIdx = -1;
+  const show = () => {
+    const idx = renderAt(t);
+    scrub.value = String(t % TOTAL);
+    time.textContent = `${(t % TOTAL).toFixed(1)} / ${TOTAL.toFixed(1)} s`;
+    if (idx !== shownIdx) { scenesEl.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.j === idx))); shownIdx = idx; }
+  };
+  const setPlaying = p => { playing = p; playBtn.textContent = p ? 'Pause' : 'Play'; last = performance.now(); };
+  setPlaying(playing);
+  const loop = now => { if (playing) { t = (t + (now - last) / 1000) % TOTAL; last = now; show(); } requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+  show();
+
+  playBtn.addEventListener('click', () => setPlaying(!playing));
+  scrub.addEventListener('input', () => { setPlaying(false); t = +scrub.value; show(); });
+  scenesEl.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; t = STARTS[+b.dataset.j]; setPlaying(true); show(); });
+
+  const segBtns = document.querySelectorAll('.seg button');
+  const pickCard = c => { window.setCard(c); segBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.card === c))); };
+  segBtns.forEach(b => b.addEventListener('click', () => pickCard(b.dataset.card)));
+  const rootTheme = document.documentElement.dataset.theme;
+  pickCard(rootTheme ? rootTheme : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+  segBtns.forEach(b => b.classList.add('btn'));
+  document.addEventListener('keydown', e => { if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); setPlaying(!playing); } });
+})();
+</script>
